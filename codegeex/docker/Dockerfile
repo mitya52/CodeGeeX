@@ -26,13 +26,6 @@ RUN curl -o /workspace/download/boost_1_71_0.tar.gz -SL https://boostorg.jfrog.i
     && ./bootstrap.sh --prefix=/usr/ && ./b2 && ./b2 install \
     && cd .. && rm -r boost_1_71_0
 
-# OpenSSL
-RUN curl -o /workspace/download/openssl.tar.gz -SL https://www.openssl.org/source/old/3.0/openssl-3.0.0.tar.gz \
-    && tar -zxf /workspace/download/openssl.tar.gz && rm /workspace/download/openssl.tar.gz && cd openssl-3.0.0 \
-    && ./Configure && make && make install \
-    && cd .. && rm -r openssl-3.0.0
-ENV PATH=/usr/bin/openssl:$PATH
-
 # Java
 RUN curl -o /workspace/download/jdk.tar.gz -SL https://download.oracle.com/java/18/archive/jdk-18.0.2.1_linux-x64_bin.tar.gz \
     && mkdir /usr/java && tar -zxf /workspace/download/jdk.tar.gz -C /usr/java && rm /workspace/download/jdk.tar.gz
