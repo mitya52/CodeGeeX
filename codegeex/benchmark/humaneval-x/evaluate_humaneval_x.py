@@ -115,6 +115,7 @@ def evaluate_functional_correctness(
         out_file = os.path.join(out_dir, input_file.split('/')[-1].replace(".jsonl", suffix))
     else:
         out_file = os.path.join(input_file.replace(".jsonl", suffix))
+    metrics_file = out_file.replace(suffix, "_metrics.json")
 
     if "humaneval_" in input_file:
         test_groundtruth = True
@@ -202,6 +203,9 @@ def evaluate_functional_correctness(
         pass_at_k = {f"pass@{k}": estimate_pass_at_k(total, correct, k).mean()
                      for k in ks if (total >= k).all()}
         print(pass_at_k)
+        with open(metrics_file, "w") as f:
+            print("Writing to: ", metrics_file)
+            json.dump(pass_at_k, f)
     else:
         print("Total:", np.sum(total))
         print("Correct:", np.sum(correct))
