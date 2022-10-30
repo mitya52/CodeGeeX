@@ -52,7 +52,7 @@ def check_correctness(
                             # does not perform destructive actions on their host or network.
                             # Once you have read this disclaimer and taken appropriate precautions,
                             # uncomment the following line and proceed at your own risk:
-                            # exec(sample["test_code"], exec_globals)
+                            exec(sample["test_code"], exec_globals)
                     result.append("passed")
                 except TimeoutException:
                     result.append("timed out")
@@ -78,6 +78,7 @@ def check_correctness(
             if not os.path.exists(tmp_dir):
                 os.makedirs(tmp_dir)
 
+            cwd = os.path.abspath(os.getcwd())
             os.chdir(tmp_dir)
             open(f"main_test.go", 'w').write(sample["test_code"])
             try:
@@ -92,7 +93,7 @@ def check_correctness(
                     # does not perform destructive actions on their host or network.
                     # Once you have read this disclaimer and taken appropriate precautions,
                     # uncomment the following line and proceed at your own risk:
-                    # exec_result = subprocess.run(["go", "test", f"-timeout={timeout}s", "main_test.go"], timeout=timeout, capture_output=True)
+                    exec_result = subprocess.run(["go", "test", f"-timeout={timeout}s", "main_test.go"], timeout=timeout, capture_output=True)
 
                 if exec_result.returncode == 0:
                     result.append("passed")
@@ -112,6 +113,7 @@ def check_correctness(
             except TimeoutException:
                 result.append("timed out")
 
+            os.chdir(cwd)
             shutil.rmtree(tmp_dir)
         elif "js" in language_type.lower():
             import os
@@ -123,6 +125,7 @@ def check_correctness(
             if not os.path.exists(tmp_dir):
                 os.makedirs(tmp_dir)
 
+            cwd = os.path.abspath(os.getcwd())
             os.chdir(tmp_dir)
             open(f"test.js", 'w').write(sample["test_code"])
             try:
@@ -137,7 +140,7 @@ def check_correctness(
                     # does not perform destructive actions on their host or network.
                     # Once you have read this disclaimer and taken appropriate precautions,
                     # uncomment the following line and proceed at your own risk:
-                    # exec_result = subprocess.run(["node", "test.js"], timeout=timeout, capture_output=True)
+                    exec_result = subprocess.run(["node", "test.js"], timeout=timeout, capture_output=True)
 
                 if exec_result.stderr.decode():
                     err = exec_result.stderr.decode()
@@ -151,6 +154,7 @@ def check_correctness(
             except TimeoutException:
                 result.append("timed out")
 
+            os.chdir(cwd)
             shutil.rmtree(tmp_dir)
         elif "cpp" in language_type.lower():
             import os
@@ -162,6 +166,7 @@ def check_correctness(
             if not os.path.exists(tmp_dir):
                 os.makedirs(tmp_dir)
 
+            cwd = os.path.abspath(os.getcwd())
             os.chdir(tmp_dir)
             open(f"test.cpp", 'w').write(sample["test_code"])
             if "162" in task_id:
@@ -190,7 +195,7 @@ def check_correctness(
                         # does not perform destructive actions on their host or network.
                         # Once you have read this disclaimer and taken appropriate precautions,
                         # uncomment the following line and proceed at your own risk:
-                        # exec_result = subprocess.run(["./a.out"], timeout=timeout, capture_output=True)
+                        exec_result = subprocess.run(["./a.out"], timeout=timeout, capture_output=True)
 
                     if exec_result.returncode == 0:
                         result.append("passed")
@@ -209,6 +214,7 @@ def check_correctness(
                 except TimeoutException:
                     result.append("timed out")
 
+            os.chdir(cwd)
             shutil.rmtree(tmp_dir)
 
         elif "java" in language_type.lower():
@@ -223,13 +229,12 @@ def check_correctness(
             if not os.path.exists(tmp_dir):
                 os.makedirs(tmp_dir)
 
-            os.chdir(tmp_dir)
             open(os.path.join(tmp_dir, "Main.java"), 'w').write(sample["test_code"])
             res = "failed: unknown error"
             compile_returncode = -1
             for _ in range(5):
                 try:
-                    compilation_result = subprocess.run(['javac', os.path.join(tmp_dir, "Main.java")], timeout=5,
+                    compilation_result = subprocess.run(['javac', os.path.join(tmp_dir, "Main.java")], timeout=timeout,
                                                         capture_output=True)
                     compile_returncode = compilation_result.returncode
                     break
@@ -249,7 +254,7 @@ def check_correctness(
                     # does not perform destructive actions on their host or network.
                     # Once you have read this disclaimer and taken appropriate precautions,
                     # uncomment the following line and proceed at your own risk:
-                    # exec_result = subprocess.run([f'java', '-cp', tmp_dir, 'Main'], timeout=timeout, capture_output=True)
+                    exec_result = subprocess.run([f'java', '-cp', tmp_dir, 'Main'], timeout=timeout, capture_output=True)
                     if exec_result.returncode == 0:
                         res = "passed"
                     elif exec_result.returncode == 1:
